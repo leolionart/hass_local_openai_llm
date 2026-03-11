@@ -701,7 +701,7 @@ class LocalAiEntity(Entity):
 
         model_args: dict[str, Any] = {
             "model": self.model,
-            "user": chat_log.conversation_id,
+            "prompt_cache_key": chat_log.conversation_id,
             "temperature": temperature,
             "parallel_tool_calls": parallel_tool_calls,
         }
@@ -773,7 +773,7 @@ class LocalAiEntity(Entity):
                 )
             except openai.OpenAIError as err:
                 LOGGER.error("Error requesting response from API: %s", err)
-                raise HomeAssistantError("Error talking to API") from err
+                raise HomeAssistantError(f"Error talking to API: {err}") from err
 
             try:
                 model_args["messages"].extend(
@@ -814,7 +814,7 @@ class LocalAiEntity(Entity):
         model_args: dict[str, Any] = {
             "model": self.model,
             "input": response_input,
-            "user": chat_log.conversation_id,
+            "prompt_cache_key": chat_log.conversation_id,
             "temperature": temperature,
             "stream": False,
             "store": True,
@@ -835,7 +835,7 @@ class LocalAiEntity(Entity):
             response = await client.responses.create(**model_args)
         except openai.OpenAIError as err:
             LOGGER.error("Error requesting image response from API: %s", err)
-            raise HomeAssistantError("Error talking to API") from err
+            raise HomeAssistantError(f"Error talking to API: {err}") from err
 
         LOGGER.debug("Received image response from API: %s", response)
         text_output = getattr(response, "output_text", None)
