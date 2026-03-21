@@ -13,7 +13,12 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from openai.types.responses.response_output_item import ImageGenerationCall
 
 from . import LocalAiConfigEntry
-from .const import GEMINI_MODEL_PREFIXES, LOGGER
+from .const import (
+    CONF_GENERATE_DATA,
+    CONF_GENERATE_IMAGE,
+    CONF_SUPPORT_ATTACHMENTS,
+    LOGGER,
+)
 from .entity import LocalAiEntity
 
 
@@ -46,12 +51,12 @@ class LocalAITaskEntity(
         ai_task.AITaskEntity.__init__(self)
         LocalAiEntity.__init__(self, entry, subentry)
 
-        features = (
-            ai_task.AITaskEntityFeature.GENERATE_DATA
-            | ai_task.AITaskEntityFeature.SUPPORT_ATTACHMENTS
-        )
-        model_name = self.model.lower()
-        if model_name.startswith(GEMINI_MODEL_PREFIXES):
+        features = 0
+        if subentry.data.get(CONF_SUPPORT_ATTACHMENTS, True):
+            features |= ai_task.AITaskEntityFeature.SUPPORT_ATTACHMENTS
+        if subentry.data.get(CONF_GENERATE_DATA, True):
+            features |= ai_task.AITaskEntityFeature.GENERATE_DATA
+        if subentry.data.get(CONF_GENERATE_IMAGE, True):
             features |= ai_task.AITaskEntityFeature.GENERATE_IMAGE
         self._attr_supported_features = features
 

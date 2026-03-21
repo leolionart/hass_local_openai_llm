@@ -20,7 +20,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import llm
 from homeassistant.helpers.entity import Entity
-from openai._streaming import AsyncStream
+from openai import AsyncStream
 from pylatexenc.latex2text import LatexNodes2Text
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -51,7 +51,7 @@ from .const import (
     CONF_STRIP_LATEX,
     CONF_TEMPERATURE,
     DOMAIN,
-    GEMINI_MODEL_PREFIXES,
+    GEMINI_MIME_TYPES_SUPPORTED,
     LOGGER,
     LATEX_MATH_SPAN,
     AUDIO_MIME_TYPE_MAP,
@@ -205,21 +205,12 @@ def _consume_latex(buffer: str, flush: bool = False) -> tuple[str, str]:
     return buffer, ""
 
 
-def _is_gemini_model(model: str | None) -> bool:
-    """Return True if the model is identified as a Gemini model."""
-    if not model:
-        return False
-    return model.lower().startswith(GEMINI_MODEL_PREFIXES)
-
-
-def _attachment_supported(mime_type: str, model: str | None) -> bool:
+def _attachment_supported(mime_type: str) -> bool:
     """Validate whether the attachment MIME type is supported for the active model."""
-    mime_type = mime_type.lower()
+    if not mime_type:
+        return False
 
-    if mime_type.startswith("image/") or mime_type == "application/pdf":
-        return True
-
-    if _is_gemini_model(model) and mime_type.startswith(("audio/", "video/", "text/")):
+    if mime_type.lower() in GEMINI_MIME_TYPES_SUPPORTED:
         return True
 
     return False
@@ -427,7 +418,7 @@ async def _convert_content_to_chat_message(
                     or "application/octet-stream"
                 )
 
-                if not _attachment_supported(raw_mime_type, model):
+                if not _attachment_supported(raw_mime_type):
                     LOGGER.debug(
                         "Unsupported attachment type '%s' for model '%s'",
                         raw_mime_type,

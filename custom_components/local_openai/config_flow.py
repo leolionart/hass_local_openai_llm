@@ -43,6 +43,9 @@ from .const import (
     CONF_STRIP_EMPHASIS,
     CONF_STRIP_LATEX,
     CONF_TEMPERATURE,
+    CONF_GENERATE_DATA,
+    CONF_GENERATE_IMAGE,
+    CONF_SUPPORT_ATTACHMENTS,
     DOMAIN,
     LOGGER,
     RECOMMENDED_CONVERSATION_OPTIONS,
@@ -117,7 +120,6 @@ class LocalAiSubentryFlowHandler(ConfigSubentryFlow):
 
     @staticmethod
     def strip_model_pathing(model_name: str) -> str:
-        """llama.cpp at the very least will keep the full model file path supplied from the CLI so lets look to strip that and any .gguf extension."""
         matches = re.search(r"([^/]*)\.gguf$", model_name.strip())
         return matches[1] if matches else model_name
 
@@ -325,6 +327,18 @@ class AITaskDataFlowHandler(LocalAiSubentryFlowHandler):
                 ): SelectSelector(
                     SelectSelectorConfig(options=downloaded_models, custom_value=True)
                 ),
+                vol.Optional(
+                    CONF_GENERATE_DATA,
+                    default=options.get(CONF_GENERATE_DATA, True),
+                ): bool,
+                vol.Optional(
+                    CONF_GENERATE_IMAGE,
+                    default=options.get(CONF_GENERATE_IMAGE, True),
+                ): bool,
+                vol.Optional(
+                    CONF_SUPPORT_ATTACHMENTS,
+                    default=options.get(CONF_SUPPORT_ATTACHMENTS, True),
+                ): bool,
                 vol.Optional(
                     CONF_STRIP_EMOJIS,
                     default=options.get(CONF_STRIP_EMOJIS, True),

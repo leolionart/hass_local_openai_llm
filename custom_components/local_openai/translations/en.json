@@ -74,6 +74,9 @@
           "title": "Configure the new AI task agent",
           "data": {
             "model": "Model",
+            "generate_data": "Generate data based on instructions",
+            "generate_image": "Generate images based on instructions",
+            "support_attachments": "Support attachments with generate data",
             "strip_emojis": "Strip emojis from the response",
             "strip_emphasis": "Strip Markdown emphasis markers from the response",
             "strip_latex": "Strip LaTeX commands from the response",
@@ -87,6 +90,9 @@
           "title": "Reconfigure the AI task agent",
           "data": {
             "model": "Model",
+            "generate_data": "Generate data based on instructions",
+            "generate_image": "Generate images based on instructions",
+            "support_attachments": "Support attachments with generate data",
             "strip_emojis": "Strip emojis from the response",
             "strip_emphasis": "Strip Markdown emphasis markers from the response",
             "strip_latex": "Strip LaTeX commands from the response",
