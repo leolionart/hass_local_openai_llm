@@ -3,7 +3,17 @@ name = "local_openai"
 version = "1.0.0"
 description = "Home Assistant integration for the Gemini-FastAPI and any OpenAI-compatible services"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.14.2"
+dependencies = [
+    "homeassistant>=2026.3",
+    "demoji",
+    "openai",
+    "orjson",
+    "pylatexenc",
+    "voluptuous",
+    "voluptuous-openapi",
+    "webcolors"
+]
 
 [project.urls]
 Repository = "https://github.com/luuquangvu/hass_local_openai_llm"
