@@ -134,7 +134,7 @@ class LocalAITaskEntity(
                 width_str, height_str = str(size).split("x")
                 width = int(width_str)
                 height = int(height_str)
-            except ValueError, AttributeError:
+            except (ValueError, AttributeError):
                 width = height = None
 
         revised_prompt = getattr(image_call, "revised_prompt", None)
