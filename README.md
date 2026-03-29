@@ -12,6 +12,7 @@ This repository is a specialized fork of the original [Local OpenAI LLM](https:/
 - **Multimodal Mastery**: Seamlessly send text, images, audio, video, and PDF files directly to Google Gemini for advanced analysis and reasoning.
 - **Completely Free & No API Key**: Access powerful Google Gemini models for free as a drop-in OpenAI replacement. No Google Cloud project or official API key required (powered by [Gemini-FastAPI](https://github.com/luuquangvu/ha-addons)).
 - **Native Home Assistant Integration**: Deeply integrated with Assist, supporting tool calling (intent handling), image inputs for AI tasks, and temperature tuning.
+- **Editable Connections**: Update the configured server name, API key, and base URL later from Home Assistant's integration reconfigure screen without removing and re-adding the integration.
 - **Manual Prompt Control**: Take full control of system instructions with Jinja2 template support for precise response shaping and personality.
 - **Image Generation**: Integrated support for generating images directly through the conversation agent or dedicated services.
 - **Announcement-Ready Output**: Built-in emoji stripping, Markdown emphasis cleanup, and LaTeX removal to ensure clear, high-quality TTS announcements.
@@ -30,11 +31,11 @@ This repository is a specialized fork of the original [Local OpenAI LLM](https:/
 
 ### Option 1: HACS (Recommended)
 
-[![Add Local OpenAI LLM to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luuquangvu&repository=hass_local_openai_llm&category=integration)
+[![Add Local OpenAI LLM to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=leolionart&repository=hass_local_openai_llm&category=integration)
 
 1. Open **HACS** and select **Integrations**.
 2. Search for **Local OpenAI LLM**.
-3. If not found, add `https://github.com/luuquangvu/hass_local_openai_llm` as a **Custom Repository** (Category: Integration).
+3. If not found, add `https://github.com/leolionart/hass_local_openai_llm` as a **Custom Repository** (Category: Integration).
 4. Click **Download**, then restart Home Assistant.
 
 ### Option 2: Manual Installation
@@ -54,6 +55,7 @@ This repository is a specialized fork of the original [Local OpenAI LLM](https:/
    - **Server URL**: The full endpoint (e.g., `http://127.0.0.1:8000/v1`). **Note:** Must include the `/v1` suffix.
    - **API Key**: Optional (use the API key if configured in your Gemini-FastAPI `config.yaml`).
 4. Follow the setup wizard to create **Conversation Agents** or **AI Tasks**.
+5. To edit an existing connection later, open the integration's three-dot menu and choose **Reconfigure**.
 
 ---
 

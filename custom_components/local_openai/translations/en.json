@@ -8,6 +8,14 @@
           "base_url": "Server URL",
           "api_key": "API key"
         }
+      },
+      "reconfigure": {
+        "title": "Edit Local OpenAI connection",
+        "data": {
+          "server_name": "Server Name",
+          "base_url": "Server URL",
+          "api_key": "API key"
+        }
       }
     },
     "error": {
@@ -15,7 +23,8 @@
       "unknown": "An unknown error occurred"
     },
     "abort": {
-      "already_configured": "Already configured"
+      "already_configured": "Already configured",
+      "reconfigure_successful": "Connection updated"
     }
   },
   "config_subentries": {

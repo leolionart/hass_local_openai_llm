@@ -57,6 +57,80 @@ class LocalAiConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    def _sanitize_connection_input(user_input: dict[str, Any]) -> dict[str, Any]:
+        """Normalize connection settings before storing them."""
+        sanitized_input = user_input.copy()
+
+        server_name = sanitized_input.get(CONF_SERVER_NAME)
+        if isinstance(server_name, str):
+            sanitized_input[CONF_SERVER_NAME] = server_name.strip() or "Local LLM Server"
+
+        base_url = sanitized_input.get(CONF_BASE_URL)
+        if isinstance(base_url, str):
+            sanitized_input[CONF_BASE_URL] = base_url.strip()
+
+        api_key = sanitized_input.get(CONF_API_KEY)
+        if isinstance(api_key, str):
+            api_key = api_key.strip()
+            if api_key:
+                sanitized_input[CONF_API_KEY] = api_key
+            else:
+                sanitized_input.pop(CONF_API_KEY, None)
+
+        return sanitized_input
+
+    @staticmethod
+    def _get_connection_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
+        """Return the schema used to configure the upstream OpenAI-compatible server."""
+        defaults = defaults or {}
+        return vol.Schema(
+            {
+                vol.Required(
+                    CONF_SERVER_NAME,
+                    default=defaults.get(CONF_SERVER_NAME, "Local LLM Server"),
+                ): str,
+                vol.Required(
+                    CONF_BASE_URL,
+                    default=defaults.get(CONF_BASE_URL, ""),
+                ): str,
+                vol.Optional(
+                    CONF_API_KEY,
+                    default=defaults.get(CONF_API_KEY, ""),
+                ): str,
+            }
+        )
+
+    async def _async_validate_connection(self, user_input: dict[str, Any]) -> dict[str, str]:
+        """Validate connection settings against the configured upstream server."""
+        LOGGER.debug("Initialising OpenAI client with base_url: %s", user_input[CONF_BASE_URL])
+
+        try:
+            client = AsyncOpenAI(
+                base_url=user_input.get(CONF_BASE_URL),
+                api_key=user_input.get(CONF_API_KEY, ""),
+                http_client=get_async_client(self.hass),
+            )
+
+            LOGGER.debug("Retrieving model list to ensure server is accessible")
+            await client.models.list()
+        except OpenAIError as err:
+            LOGGER.exception("OpenAI Error: %s", err)
+            return {"base": "cannot_connect"}
+        except Exception as err:
+            LOGGER.exception("Unexpected exception: %s", err)
+            return {"base": "unknown"}
+
+        LOGGER.debug("Server connection verified")
+        return {}
+
+    def _base_url_in_use(self, base_url: str, current_entry_id: str | None = None) -> bool:
+        """Return True if another config entry already uses the same base URL."""
+        return any(
+            entry.entry_id != current_entry_id and entry.data.get(CONF_BASE_URL) == base_url
+            for entry in self.hass.config_entries.async_entries(DOMAIN)
+        )
+
     @classmethod
     @callback
     def async_get_supported_subentry_types(
@@ -73,26 +147,11 @@ class LocalAiConfigFlow(ConfigFlow, domain=DOMAIN):
         LOGGER.debug("Config flow: step_user, input: %s", user_input)
         errors = {}
         if user_input is not None:
-            self._async_abort_entries_match(user_input)
-            LOGGER.debug(f"Initialising OpenAI client with base_url: {user_input[CONF_BASE_URL]}")
-
-            try:
-                client = AsyncOpenAI(
-                    base_url=user_input.get(CONF_BASE_URL),
-                    api_key=user_input.get(CONF_API_KEY, ""),
-                    http_client=get_async_client(self.hass),
-                )
-
-                LOGGER.debug("Retrieving model list to ensure server is accessible")
-                await client.models.list()
-            except OpenAIError as err:
-                LOGGER.exception(f"OpenAI Error: {err}")
-                errors["base"] = "cannot_connect"
-            except Exception as err:
-                LOGGER.exception(f"Unexpected exception: {err}")
-                errors["base"] = "unknown"
-            else:
-                LOGGER.debug("Server connection verified")
+            user_input = self._sanitize_connection_input(user_input)
+            if self._base_url_in_use(user_input[CONF_BASE_URL]):
+                return self.async_abort(reason="already_configured")
+            errors = await self._async_validate_connection(user_input)
+            if not errors:
                 return self.async_create_entry(
                     title=f"{user_input.get(CONF_SERVER_NAME, 'Local LLM Server')}",
                     data=user_input,
@@ -100,13 +159,31 @@ class LocalAiConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_SERVER_NAME, default="Local LLM Server"): str,
-                    vol.Required(CONF_BASE_URL): str,
-                    vol.Optional(CONF_API_KEY): str,
-                }
-            ),
+            data_schema=self._get_connection_schema(user_input),
+            errors=errors,
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle updating an existing connection."""
+        entry = self._get_reconfigure_entry()
+        errors = {}
+
+        if user_input is not None:
+            user_input = self._sanitize_connection_input(user_input)
+            if self._base_url_in_use(user_input[CONF_BASE_URL], entry.entry_id):
+                return self.async_abort(reason="already_configured")
+            errors = await self._async_validate_connection(user_input)
+            if not errors:
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data_updates=user_input,
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=self._get_connection_schema(user_input or entry.data),
             errors=errors,
         )
 

@@ -12,6 +12,7 @@ Repository này là một bản fork đặc biệt từ dự án gốc [Local Op
 - **Làm chủ đa phương thức (Multimodal Mastery)**: Gửi văn bản, hình ảnh, âm thanh, video và tệp PDF trực tiếp đến Google Gemini để phân tích và suy luận nâng cao.
 - **Hoàn toàn miễn phí & Không cần API Key**: Truy cập các mô hình Google Gemini mạnh mẽ miễn phí như một giải pháp thay thế OpenAI. Không yêu cầu dự án Google Cloud hay API key chính thức (được hỗ trợ bởi [Gemini-FastAPI](https://github.com/luuquangvu/ha-addons)).
 - **Tích hợp Home Assistant gốc**: Tích hợp sâu với **Assist**, hỗ trợ gọi công cụ (tool calling/intent handling), đầu vào hình ảnh cho các tác vụ AI và tùy chỉnh nhiệt độ (temperature).
+- **Chỉnh sửa kết nối ngay trên giao diện**: Có thể cập nhật tên server, API key và base URL từ màn hình **Reconfigure** của integration mà không cần xóa và cài lại.
 - **Kiểm soát Prompt thủ công**: Toàn quyền kiểm soát các hướng dẫn hệ thống (system instructions) với hỗ trợ Jinja2 template để định hình phản hồi và tính cách của AI một cách chính xác.
 - **Tạo hình ảnh**: Tích hợp hỗ trợ tạo hình ảnh trực tiếp thông qua conversation agent hoặc các dịch vụ chuyên dụng.
 - **Đầu ra sẵn sàng cho thông báo**: Tích hợp sẵn tính năng loại bỏ emoji, dọn dẹp ký tự nhấn mạnh Markdown và loại bỏ LaTeX để đảm bảo các thông báo qua TTS (chuyển văn bản thành giọng nói) rõ ràng và chất lượng cao.
@@ -30,11 +31,11 @@ Repository này là một bản fork đặc biệt từ dự án gốc [Local Op
 
 ### Lựa chọn 1: HACS (Khuyên dùng)
 
-[![Thêm Local OpenAI LLM vào HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luuquangvu&repository=hass_local_openai_llm&category=integration)
+[![Thêm Local OpenAI LLM vào HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=leolionart&repository=hass_local_openai_llm&category=integration)
 
 1. Mở **HACS** và chọn **Integrations**.
 2. Tìm kiếm **Local OpenAI LLM**.
-3. Nếu không tìm thấy, thêm `https://github.com/luuquangvu/hass_local_openai_llm` làm **Custom Repository** (Loại: Integration).
+3. Nếu không tìm thấy, thêm `https://github.com/leolionart/hass_local_openai_llm` làm **Custom Repository** (Loại: Integration).
 4. Nhấn **Download**, sau đó khởi động lại Home Assistant.
 
 ### Lựa chọn 2: Cài đặt thủ công
@@ -54,6 +55,7 @@ Repository này là một bản fork đặc biệt từ dự án gốc [Local Op
    - **Server URL**: Endpoint đầy đủ (ví dụ: `http://127.0.0.1:8000/v1`). **Lưu ý:** Phải bao gồm hậu tố `/v1`.
    - **API Key**: Không bắt buộc (sử dụng API key nếu đã cấu hình trong tệp `config.yaml` của Gemini-FastAPI).
 4. Làm theo trình hướng dẫn để tạo **Conversation Agents** hoặc **AI Tasks**.
+5. Khi cần chỉnh sửa kết nối đã tạo, mở menu ba chấm của integration và chọn **Reconfigure**.
 
 ---
 
