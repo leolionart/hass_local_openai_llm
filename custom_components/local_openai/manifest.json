@@ -6,8 +6,8 @@
   "config_flow": true,
   "dependencies": ["conversation"],
   "documentation": "https://github.com/leolionart/hass_local_openai_llm",
-  "issue_tracker": "https://github.com/leolionart/hass_local_openai_llm/issues",
   "integration_type": "service",
+  "issue_tracker": "https://github.com/leolionart/hass_local_openai_llm/issues",
   "iot_class": "local_polling",
   "requirements": [
     "demoji",
